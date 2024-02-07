@@ -1,2 +1,3 @@
 # Viittomakieli
 Viittomakieli_project
+Sepon kokeilurivi
