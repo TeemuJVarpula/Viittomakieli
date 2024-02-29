@@ -1,6 +1,6 @@
 # Sign Language
 
-SignLanguage_project
+Sign Language_project
 
 ## Project members:
 
@@ -17,19 +17,18 @@ SignLanguage_project
 
 ### Product:
 
-        button for picture capture (later start of video regognition? )
+        button for picture capture (later start of video recognition? )
         input from video camera ( pictures first )
         output to led screen  ( few row screen )
         power button ( optional )
         program
 
-
 ## Specs:
 
-    - Discussion is to be made from where the "learning material" is coming from (licenses etc.)
+    - Discussion is to made from where the "learning material" is coming from (licenses etc.)
         - Are we using own data/pictures or from some other source
 
-    - "product" should be in small package which is easily used and transported (rasberry pii).
+    - "product" should be in small package which is easily used and transported (raspberry pi).
 
     - Product programming language is chosen to be python. This can be changed later if needed.
 
@@ -38,7 +37,7 @@ SignLanguage_project
         Both direction communication
             + screen for picture/video output
             + Chatgpt support
-            + bluetooht support
+            + bluetooth support
             + Text to speech output?
 
 ### Program functionality phases:
@@ -92,7 +91,7 @@ SignLanguage_project
     cd PythonEnv
 
     python -m venv --system-site-packages env        # Creates environment and inherit system-site-packages. https://www.raspberrypi.com/documentation/computers/os.html#using-a-separate-environment-for-each-project
-    source env/bin/activate                            # Enter into #virtual environment (in PythonEnv). "deactivate" to exit.
+    source env/bin/activate                     # Enter into #virtual environment (in PythonEnv). "deactivate" to exit.
 
     python -m install mediapipe-rpi4
     python -m install scikit-learn
