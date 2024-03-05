@@ -14,12 +14,14 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
-
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
-labels_arr = []
 
-for i in range( len( chars ) ):
-	labels_arr.append( chars[i] )
+last_character = ""
+frame_counter = 0
+recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
+send_frame = 20 # How many frames sign needs to be same before sending.
+send_buffer = []
+send_buffer_len = 16
 
 while True:
 	data_aux = []
@@ -29,7 +31,6 @@ while True:
 	H, W, _ = frame.shape
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
-
 
 	if results.multi_hand_landmarks:
 		if len( results.multi_hand_landmarks ) == 1:
@@ -63,11 +64,33 @@ while True:
 			y2 = int( max( y_ ) * H ) - 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
-			predicted_character = labels_arr[ int( prediction[0] ) ]
+			predicted_character = chars[ int( prediction[0] ) ]
+			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
+
+			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
+				frame_counter += 1
+				if send_frame <= frame_counter:
+					send_buffer.append( predicted_character )
+					frame_counter = 0
+
+					if send_buffer_len < len( send_buffer ):
+						send_buffer.pop(0)
+			else:
+				frame_counter = 0
+
+			last_character = predicted_character
+			color = ( 0, 255, 0 )
+
+			if recognition_accuracy < recognition_threshold:
+				color = ( 0, 0, 255 )
 
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
-			cv2.putText( frame, predicted_character, ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 0, 0 ), 3, cv2.LINE_AA )
+			cv2.putText( frame, predicted_character, ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
+			cv2.putText( frame, f"Accuracy: {recognition_accuracy:.2f}% Frame: {frame_counter}/{send_frame}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
+	else:
+		frame_counter = 0
 
+	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
 	cv2.imshow( 'frame', frame )
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
