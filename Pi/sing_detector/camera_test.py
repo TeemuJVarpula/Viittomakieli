@@ -2,7 +2,7 @@ import cv2
 from picamera2 import Picamera2
 
 piCam = Picamera2()
-piCam.preview_configuration.main.size = ( 1280, 720 )
+piCam.preview_configuration.main.size = ( 640, 480 )
 piCam.preview_configuration.main.format = "RGB888"
 piCam.preview_configuration.align()
 piCam.configure( "preview" )
@@ -15,4 +15,5 @@ while True:
 	if cv2.waitKey( 1 ) == ord( 'q' ):
 		break
 
+piCam.close()
 cv2.destroyAllWindows()
