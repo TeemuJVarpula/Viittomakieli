@@ -11,8 +11,8 @@
 	python -m venv --system-site-packages env		# Creates environment and inherit system-site-packages. https://www.raspberrypi.com/documentation/computers/os.html#using-a-separate-environment-for-each-project
 	source env/bin/activate							# Enter into virtual environment (in PythonEnv). "deactivate" to exit.
 
-	python -m install mediapipe-rpi4
-	python -m install scikit-learn
+	python -m pip install mediapipe
+	python -m pip install scikit-learn
 
 # For possible custom build of mediapipe
 	Could replace the need for the virtual environment.
