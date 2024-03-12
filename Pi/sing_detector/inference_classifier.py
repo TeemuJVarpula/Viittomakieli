@@ -3,15 +3,19 @@ import numpy as np
 
 import cv2
 import mediapipe as mp
-from picamera2 import Picamera2
+#from picamera2 import Picamera2
 
-piCam = Picamera2()
-piCam.preview_configuration.main.size = ( 640, 480 )
+import __init__ as camera
+    
+piCam = camera.init()
+
+#piCam = PiCamera()
+#piCam.preview_configuration.main.size = ( 640, 480 )
 # piCam.preview_configuration.main.size = ( 320, 240 )
-piCam.preview_configuration.main.format = "RGB888"
-piCam.preview_configuration.align()
-piCam.configure( "preview" )
-piCam.start()
+#piCam.preview_configuration.main.format = "RGB888"
+#piCam.preview_configuration.align()
+#piCam.configure( "preview" )
+#piCam.start()
 
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
