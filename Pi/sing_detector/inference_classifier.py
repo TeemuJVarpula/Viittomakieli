@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import mediapipe as mp
 from picamera2 import Picamera2
+import text_display
 
 piCam = Picamera2()
 piCam.preview_configuration.main.size = ( 640, 480 )
@@ -73,6 +74,8 @@ while True:
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
 			predicted_character = chars[ int( prediction[0] ) ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
+
+			text_display(predicted_character)
 
 			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
 				frame_counter += 1
