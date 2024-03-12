@@ -5,11 +5,9 @@ import cv2
 import mediapipe as mp
 #from picamera2 import Picamera2
 
-import __init__ as camera
-    
-piCam = camera.init()
+from cameraWrapper import PiCamera
 
-#piCam = PiCamera()
+piCam = PiCamera()
 #piCam.preview_configuration.main.size = ( 640, 480 )
 # piCam.preview_configuration.main.size = ( 320, 240 )
 #piCam.preview_configuration.main.format = "RGB888"
