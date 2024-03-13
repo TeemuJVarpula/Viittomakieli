@@ -28,17 +28,29 @@ send_buffer = []
 send_buffer_len = 16
 
 while True:
-	data_aux = []
-	x_ = []
-	y_ = []
+	handlist=[]
 	ret, frame = cap.read()
 	H, W, _ = frame.shape
+	frame= cv2.flip(frame, 1)
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
 
 	if results.multi_hand_landmarks:
-		if len( results.multi_hand_landmarks ) == 1:
-			for hand_landmarks in results.multi_hand_landmarks:
+		data_aux = []
+		x_ = []
+		y_ = []
+		print(results.multihand_landmarks)
+		for i in range (0,len(results.multihand_landmarks)):
+			marks=[]
+			marks.append(results.multi_hand_landmarks[i])
+			handside=results.multi_handedness[i].classification[0].index
+			handlist.append((handside,marks))
+
+		for side,hand in handlist:
+			data_aux = []
+			x = []
+			y_ = []
+			for hand_landmarks in hand:
 				mp_drawing.draw_landmarks(
 					frame,  # image to draw
 					hand_landmarks,  # model output
@@ -47,7 +59,7 @@ while True:
 					mp_drawing_styles.get_default_hand_connections_style()
 				)
 
-			for hand_landmarks in results.multi_hand_landmarks:
+			for hand_landmarks in hand:
 				for i in range( len( hand_landmarks.landmark ) ):
 					x = hand_landmarks.landmark[i].x
 					y = hand_landmarks.landmark[i].y
@@ -83,12 +95,12 @@ while True:
 				frame_counter = 0
 
 			last_character = predicted_character
-			color = ( 0, 255, 0 )
+			color = ( 242,202,134 ) #B,G,R
 
 			if recognition_accuracy < recognition_threshold:
 				color = ( 0, 0, 255 )
 
-			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
+			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), (color ), 4 )
 			cv2.putText( frame, predicted_character, ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
 			cv2.putText( frame, f"Accuracy: {recognition_accuracy:.2f}% Frame: {frame_counter}/{send_frame}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
 	else:
