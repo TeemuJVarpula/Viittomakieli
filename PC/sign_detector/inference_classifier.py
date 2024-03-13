@@ -15,10 +15,6 @@ mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
-char_dict = {}
-
-for char in chars:
-	char_dict[ char.lower() ] = char
 
 last_character = ""
 frame_counter = 0
@@ -28,28 +24,27 @@ send_buffer = []
 send_buffer_len = 16
 
 while True:
-	handlist=[]
+
 	ret, frame = cap.read()
+	frame=cv2.flip(frame,1)
 	H, W, _ = frame.shape
-	frame= cv2.flip(frame, 1)
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
 
 	if results.multi_hand_landmarks:
-		data_aux = []
-		x_ = []
-		y_ = []
-		print(results.multihand_landmarks)
-		for i in range (0,len(results.multihand_landmarks)):
-			marks=[]
+		handlist=[]
+		
+		for i in range (0,len(results.multi_hand_landmarks)):
+			marks=[]	
 			marks.append(results.multi_hand_landmarks[i])
-			handside=results.multi_handedness[i].classification[0].index
-			handlist.append((handside,marks))
+			hside=results.multi_handedness[i].classification[0].label
+			handlist.append((hside,marks))
 
 		for side,hand in handlist:
 			data_aux = []
-			x = []
+			x_ = []
 			y_ = []
+		
 			for hand_landmarks in hand:
 				mp_drawing.draw_landmarks(
 					frame,  # image to draw
@@ -80,7 +75,7 @@ while True:
 			y2 = int( max( y_ ) * H ) - 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
-			predicted_character = char_dict[ prediction[0] ]
+			predicted_character = chars[ int( prediction[0] ) ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
@@ -95,14 +90,18 @@ while True:
 				frame_counter = 0
 
 			last_character = predicted_character
-			color = ( 242,202,134 ) #B,G,R
+			color = ( 0, 255, 0 )
 
 			if recognition_accuracy < recognition_threshold:
 				color = ( 0, 0, 255 )
 
-			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), (color ), 4 )
-			cv2.putText( frame, predicted_character, ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
-			cv2.putText( frame, f"Accuracy: {recognition_accuracy:.2f}% Frame: {frame_counter}/{send_frame}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
+			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
+			
+			if side =="Right":
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
+				cv2.putText( frame, f"Accuracy: {recognition_accuracy}% Frame: {frame_counter}/{send_frame}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
+			else:
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
 	else:
 		frame_counter = 0
 
