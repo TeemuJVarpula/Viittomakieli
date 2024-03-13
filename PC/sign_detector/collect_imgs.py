@@ -46,11 +46,14 @@ while True:
 	cv2.imshow( "frame", frame )
 
 	key = cv2.waitKey( 60 )
-
+	print(key)
 	if key == 27: # ESC.
 		break
 	elif ord( chars[0].lower() ) <= key and key <= ord( chars[ len( chars ) - 1 ].lower() ):
 		collectImages( key )
+	elif(key==8):
+		collectImages("backspace")
+	
 
 cap.release()
 cv2.destroyAllWindows()
