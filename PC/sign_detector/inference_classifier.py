@@ -101,7 +101,10 @@ while True:
 			else:
 				if take_pic == True:
 					if recognition_threshold <= recognition_accuracy:
-						send_buffer.append( predicted_character )
+						print(predicted_character)
+						print(f"send_buffer: {send_buffer}")
+						send_buffer.append( predicted_character[0][0] )
+						print(f"send_buffer2: {send_buffer}")
 						take_pic = False
 
 						if send_buffer_len < len( send_buffer ):
@@ -114,8 +117,11 @@ while True:
 
 				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_PLAIN, 1.3, ( 0, 255, 0 ), 2, cv2.LINE_AA )
 				cv2.putText( frame, f"Accuracy: {recognition_accuracy}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
- 
-	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
+	
+	if len(send_buffer)>0:
+		print(f"send_buffer3: {send_buffer} {len(send_buffer)}")
+		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
+	
 	cv2.imshow( 'frame', frame )
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
