@@ -78,6 +78,7 @@ while True:
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
 			predicted_character = prediction
+			print( max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100)
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )

@@ -29,6 +29,7 @@ for char in os.listdir( DATA_DIR ):
 			y_ = []
 
 			img = cv2.imread( os.path.join( DATA_DIR, char, img_path ) )
+			img=cv2.flip(img,1)
 			img_rgb = cv2.cvtColor( img, cv2.COLOR_BGR2RGB )
 			results = hands.process( img_rgb )
 
