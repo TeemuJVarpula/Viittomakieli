@@ -1,6 +1,6 @@
 import pickle
 import numpy as np
-
+import time
 import cv2
 import mediapipe as mp
 
@@ -16,12 +16,13 @@ mp_drawing_styles = mp.solutions.drawing_styles
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
 
-last_character = ""
-frame_counter = 0
+take_pic=False
+last_pictime=0
 recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
 send_frame = 20 # How many frames sign needs to be same before sending.
 send_buffer = []
 send_buffer_len = 16
+controllhand="Left"
 
 while True:
 
@@ -78,33 +79,43 @@ while True:
 			predicted_character = chars[ int( prediction[0] ) ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
-			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
-				frame_counter += 1
-				if send_frame <= frame_counter:
-					send_buffer.append( predicted_character )
-					frame_counter = 0
-
-					if send_buffer_len < len( send_buffer ):
-						send_buffer.pop(0)
-			else:
-				frame_counter = 0
-
-			last_character = predicted_character
-			color = ( 0, 255, 0 )
-
-			if recognition_accuracy < recognition_threshold:
-				color = ( 0, 0, 255 )
-
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
-			
-			if side =="Right":
-				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
-				cv2.putText( frame, f"Accuracy: {recognition_accuracy}% Frame: {frame_counter}/{send_frame}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
-			else:
-				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
-	else:
-		frame_counter = 0
 
+			if  side == controllhand:
+				now=0
+				if predicted_character == "A":
+					if take_pic == False:
+						now=time.time()
+						if last_pictime	== 0:
+							take_pic = True
+							last_pictime=now
+							print(f"pic1 {now}")
+						elif now-last_pictime > 2:
+							print(f"pic {now}")
+							last_pictime=now
+							take_pic = True
+					print(f"time:{now} lastpic:{last_pictime} = {(now-last_pictime)}")
+					
+	
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
+		
+			else:
+				if take_pic == True:
+					if recognition_threshold <= recognition_accuracy:
+						send_buffer.append( predicted_character )
+						take_pic = False
+
+						if send_buffer_len < len( send_buffer ):
+							send_buffer.pop(0)
+
+				if recognition_accuracy > recognition_threshold:
+					color = ( 242, 202, 134 ) #B,G,R
+				else:
+					color = ( 0, 0, 255 )
+
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_PLAIN, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
+				cv2.putText( frame, f"Accuracy: {recognition_accuracy}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
+ 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
 	cv2.imshow( 'frame', frame )
 
@@ -113,3 +124,6 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
+1710333814.8876731
+1710333814.7461472
