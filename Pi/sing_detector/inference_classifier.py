@@ -75,7 +75,6 @@ while True:
 			predicted_character = chars[ int( prediction[0] ) ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
-			text_display(predicted_character)
 
 			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
 				frame_counter += 1
@@ -102,7 +101,8 @@ while True:
 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
 	cv2.imshow( "piCam", frame )
-
+	text_display(predicted_character)
+	
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break
 
