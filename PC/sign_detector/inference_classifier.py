@@ -94,8 +94,6 @@ while True:
 							print(f"pic {now}")
 							last_pictime=now
 							take_pic = True
-					print(f"time:{now} lastpic:{last_pictime} = {(now-last_pictime)}")
-					
 	
 				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
 		
