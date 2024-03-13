@@ -1,4 +1,4 @@
-import cv2
+
 from picamera2 import Picamera2
 
 class PiCamera:
@@ -16,21 +16,7 @@ class PiCamera:
     def close(self):
         self.piCam.close()
         
-def camera_preview():
-    piCam = PiCamera()
-
-    try:
-        while True:
-            frame = piCam.capture_frame()
-            cv2.imshow("piCam", frame)
-
-            if cv2.waitKey(1) == ord('q'):
-                break
-    finally:
-        piCam.close()
-        cv2.destroyAllWindows()  
-
-camera_preview()        
+      
               
        
 
