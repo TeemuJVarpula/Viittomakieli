@@ -9,7 +9,7 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
+hands = mp_hands.Hands( static_image_mode = True, max_num_hands=1 , min_detection_confidence = 0.3 )
 
 DATA_DIR = "data"
 
@@ -58,4 +58,5 @@ for char in os.listdir( DATA_DIR ):
 
 f = open( "data.pickle", "wb" )
 pickle.dump( { "data": data, "labels": labels }, f )
+print("Done")
 f.close()

@@ -15,6 +15,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
+chars=chars.lower()
 
 take_pic=False
 last_pictime=0
@@ -76,14 +77,14 @@ while True:
 			y2 = int( max( y_ ) * H ) - 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
-			predicted_character = chars[ int( prediction[0] ) ]
+			predicted_character = prediction
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
 
 			if  side == controllhand:
 				now=0
-				if predicted_character == "A":
+				if predicted_character == "a":
 					if take_pic == False:
 						now=time.time()
 						if last_pictime	== 0:
@@ -111,7 +112,7 @@ while True:
 				else:
 					color = ( 0, 0, 255 )
 
-				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_PLAIN, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_PLAIN, 1.3, ( 0, 255, 0 ), 2, cv2.LINE_AA )
 				cv2.putText( frame, f"Accuracy: {recognition_accuracy}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
  
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
