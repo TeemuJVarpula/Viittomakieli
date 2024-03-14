@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+from lib.cameraWrapper import Camera
 import time
 import cv2
 import mediapipe as mp
@@ -7,7 +8,7 @@ import mediapipe as mp
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
 
-cap = cv2.VideoCapture( 0 )
+cap = Camera()
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -15,10 +16,10 @@ mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
-chars=chars.lower()
+char_dict = {}
 
 take_pic=False
-last_pictime=0
+last_command=0
 for char in chars:
 	char_dict[ char.lower() ] = char
 
@@ -33,7 +34,7 @@ controllhand="Left"
 
 while True:
 
-	ret, frame = cap.read()
+	frame = cap.capture_frame()
 	frame=cv2.flip(frame,1)
 	H, W, _ = frame.shape
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
@@ -82,23 +83,36 @@ while True:
 			y2 = int( max( y_ ) * H ) - 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
-			predicted_character = prediction
+			predicted_character = char_dict[ prediction[0] ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 220, 220, 220 ), 4 )
 
 			if  side == controllhand:
 				now=0
-				if predicted_character == "a":
-					if take_pic == False:
-						now=time.time()
-						if last_pictime	== 0:
-							take_pic = True
-							last_pictime=now
-						elif now-last_pictime > 2:
-							last_pictime=now
-							take_pic = True
-	
+				if recognition_threshold <= recognition_accuracy:
+					if predicted_character == "enter":
+						if take_pic == False:
+							now=time.time()
+							if last_command	== 0:
+								take_pic = True
+								last_command=now
+							elif now-last_command > 2:
+								take_pic = True
+								last_command=now
+					if predicted_character == "backspace":
+						print(f"Yes {len(send_buffer)}, {send_buffer}")
+						if len(send_buffer)>0:
+							now=time.time()
+							if last_command	== 0:
+								send_buffer.pop()
+								print(f"1:{send_buffer}")
+								last_command=now
+							elif now-last_command > 2:
+								send_buffer.pop()
+								print(f"2:{send_buffer}")
+								last_command=now
+
 				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
 				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
 		
