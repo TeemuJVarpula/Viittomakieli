@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import mediapipe as mp
 from picamera2 import Picamera2
-import text_display
+import text_display as display
 
 piCam = Picamera2()
 piCam.preview_configuration.main.size = ( 640, 480 )
@@ -101,7 +101,7 @@ while True:
 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
 	cv2.imshow( "piCam", frame )
-	text_display(predicted_character)
+	display.send(predicted_character)
 	
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break
