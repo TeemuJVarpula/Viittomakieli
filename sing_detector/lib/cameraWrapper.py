@@ -33,7 +33,3 @@ class Camera:
         else: 
             self.camera.release()
         
-#cv camera
-#platform library 
-
-

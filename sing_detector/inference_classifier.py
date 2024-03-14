@@ -4,10 +4,16 @@ from lib.cameraWrapper import Camera
 import cv2
 import mediapipe as mp
 
+display = None
+
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
 
 cap = Camera()
+
+# Only import display on raspberry.
+if cap.raspberry_pi:
+	import lib.text_display as display
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -100,8 +106,11 @@ while True:
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
 	cv2.imshow( 'frame', frame )
 
+	if display != None:
+		display.send( send_buffer )
+
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break
 
-cap.release()
+cap.close()
 cv2.destroyAllWindows()

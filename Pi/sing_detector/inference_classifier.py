@@ -3,12 +3,8 @@ import numpy as np
 
 import cv2
 import mediapipe as mp
-<<<<<<< HEAD
-#from picamera2 import Picamera2
-=======
 from picamera2 import Picamera2
 import text_display as display
->>>>>>> display_feature
 
 from cameraWrapper import Camera
 
@@ -100,14 +96,9 @@ while True:
 		frame_counter = 0
 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
-<<<<<<< HEAD
-	cv2.imshow( "Camera", frame )
-
-=======
 	cv2.imshow( "piCam", frame )
 	display.send(predicted_character)
 	
->>>>>>> display_feature
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break
 

@@ -70,5 +70,5 @@ while True:
 	elif ( ord( chars[0].lower() ) <= key and key <= ord( chars[ len( chars ) - 1 ].lower() ) ) or ( key in command_keys ):
 		collectImages( key )
 
-cap.release()
+cap.close()
 cv2.destroyAllWindows()
