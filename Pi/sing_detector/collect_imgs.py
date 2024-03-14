@@ -1,16 +1,11 @@
 import os
 import cv2
 #from picamera2 import Picamera2
-from cameraWrapper import PiCamera
+from cameraWrapper import Camera
     
 
 
-piCam = PiCamera()
-#piCam.preview_configuration.main.size = ( 640, 480 )
-#piCam.preview_configuration.main.format = "RGB888"
-#piCam.preview_configuration.align()
-#piCam.configure( "preview" )
-#piCam.start()
+cap = Camera()
 
 DATA_DIR = './data'
 
@@ -32,7 +27,7 @@ for j in range( number_of_classes ):
 	terminate = False
 
 	while True:
-		frame = piCam.capture_array()
+		ret, frame = cap.capture_frame()
 		cv2.putText(frame, "Press 'Q' for: " + str( j ) + " " + chars[j] + ", 'S' to skip" + ", 'E' to exit", ( 20, 50 ), cv2.FONT_HERSHEY_SIMPLEX, 0.8, ( 0, 255, 0 ), 3, cv2.LINE_AA )
 		cv2.imshow( "piCam", frame )
 
@@ -52,7 +47,7 @@ for j in range( number_of_classes ):
 	if collect:
 		counter = 0
 		while counter < dataset_size:
-			frame = piCam.capture_array()
+			frame = cap.capture_frame()
 			cv2.imshow( 'frame', frame )
 			cv2.waitKey( 25 )
 			cv2.imwrite( os.path.join( DATA_DIR, str( j ), '{}.jpg'.format( counter ) ), frame )
