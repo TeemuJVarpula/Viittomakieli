@@ -1,6 +1,8 @@
 import os
 
 import cv2
+from lib.cameraWrapper import Camera
+
 
 DATA_DIR = "data"
 LINE_HEIGHT = 32
@@ -18,7 +20,7 @@ if not os.path.exists( DATA_DIR ):
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
 dataset_size = 25
 
-cap = cv2.VideoCapture(0)
+cap = Camera()
 
 def showText( frame, text, pos ):
 	cv2.putText( frame, text, pos, cv2.FONT_HERSHEY_SIMPLEX, 1.2, ( 0, 255, 0 ), 1, cv2.LINE_AA )
@@ -39,7 +41,7 @@ def collectImages( key ):
 	counter = 0
 
 	while counter < dataset_size:
-		ret, frame = cap.read()
+		frame = cap.capture_frame()
 		key = cv2.waitKey( 60 )
 
 		if key == 27: # ESC.
@@ -54,7 +56,7 @@ def collectImages( key ):
 		cv2.imshow( "frame", frame )
 
 while True:
-	ret, frame = cap.read()
+	frame = cap.capture_frame()
 	showText( frame, "Press char for letters.", ( 20, LINE_HEIGHT ) )
 	showText( frame, "Enter, Backspace, Space or", ( 20, LINE_HEIGHT * 2 ) )
 	showText( frame, "Delete for commands.", ( 20, LINE_HEIGHT * 3 ) )

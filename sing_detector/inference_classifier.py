@@ -1,13 +1,13 @@
 import pickle
 import numpy as np
-
+from lib.cameraWrapper import Camera
 import cv2
 import mediapipe as mp
 
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
 
-cap = cv2.VideoCapture( 0 )
+cap = Camera()
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -34,7 +34,7 @@ while True:
 	data_aux = []
 	x_ = []
 	y_ = []
-	ret, frame = cap.read()
+	frame = cap.capture_frame()
 	H, W, _ = frame.shape
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
