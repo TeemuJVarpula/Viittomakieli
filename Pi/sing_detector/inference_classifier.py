@@ -3,15 +3,11 @@ import numpy as np
 
 import cv2
 import mediapipe as mp
-from picamera2 import Picamera2
+#from picamera2 import Picamera2
 
-piCam = Picamera2()
-piCam.preview_configuration.main.size = ( 640, 480 )
-# piCam.preview_configuration.main.size = ( 320, 240 )
-piCam.preview_configuration.main.format = "RGB888"
-piCam.preview_configuration.align()
-piCam.configure( "preview" )
-piCam.start()
+from cameraWrapper import Camera
+
+cap = Camera()
 
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
@@ -34,7 +30,7 @@ while True:
 	data_aux = []
 	x_ = []
 	y_ = []
-	frame = piCam.capture_array()
+	frame = cap.capture_frame()
 	H, W, _ = frame.shape
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
@@ -98,10 +94,10 @@ while True:
 		frame_counter = 0
 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
-	cv2.imshow( "piCam", frame )
+	cv2.imshow( "Camera", frame )
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break
 
-piCam.close()
+cap.close()
 cv2.destroyAllWindows()
