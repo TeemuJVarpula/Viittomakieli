@@ -78,10 +78,9 @@ while True:
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
 			predicted_character = prediction
-			print( max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100)
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
-			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
+			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 220, 220, 220 ), 4 )
 
 			if  side == controllhand:
 				now=0
@@ -91,21 +90,17 @@ while True:
 						if last_pictime	== 0:
 							take_pic = True
 							last_pictime=now
-							print(f"pic1 {now}")
 						elif now-last_pictime > 2:
-							print(f"pic {now}")
 							last_pictime=now
 							take_pic = True
 	
-				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
+				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
 		
 			else:
 				if take_pic == True:
 					if recognition_threshold <= recognition_accuracy:
-						print(predicted_character)
-						print(f"send_buffer: {send_buffer}")
 						send_buffer.append( predicted_character[0][0] )
-						print(f"send_buffer2: {send_buffer}")
 						take_pic = False
 
 						if send_buffer_len < len( send_buffer ):
@@ -116,12 +111,12 @@ while True:
 				else:
 					color = ( 0, 0, 255 )
 
-				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy}", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_PLAIN, 1.3, ( 0, 255, 0 ), 2, cv2.LINE_AA )
+				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.75, ( 144,203,98 ), 2, cv2.LINE_AA )
 				cv2.putText( frame, f"Accuracy: {recognition_accuracy}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
 	
 	if len(send_buffer)>0:
-		print(f"send_buffer3: {send_buffer} {len(send_buffer)}")
-		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
+		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2, cv2.LINE_AA )
 	
 	cv2.imshow( 'frame', frame )
 
@@ -130,6 +125,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-1710333814.8876731
-1710333814.7461472
