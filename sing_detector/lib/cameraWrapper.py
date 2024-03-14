@@ -1,13 +1,18 @@
 import platform
 import os
 import cv2
-from picamera2 import Picamera2
+#from picamera2 import Picamera2
 
 
 class Camera:
     def __init__(self):
-        self.raspberry_pi = platform.system() == 'Linux' and os.uname().machine == "arm"
+        try:
+            self.raspberry_pi = platform.system() == 'Linux' and os.uname().machine == "arm"
+        except AttributeError:
+            self.raspberry_pi = False
+        
         if self.raspberry_pi:
+            from picamera2 import Picamera2
             self.camera = Picamera2()
             self.camera.preview_configuration.main.size = (640, 480)
             self.camera.preview_configuration.main.format = "RGB888"
