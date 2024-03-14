@@ -94,7 +94,7 @@ while True:
 		frame_counter = 0
 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
-	cv2.imshow( "piCam", frame )
+	cv2.imshow( "Camera", frame )
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break

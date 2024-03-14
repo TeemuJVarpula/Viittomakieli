@@ -3,17 +3,10 @@ import os
 import cv2
 from picamera2 import Picamera2
 
-try:
-    
-    IS_RASPBERRY_PI = platform.system() == 'Linux' and os.uname().machine == "arm"
-    print("Is Raspberry Pi")
-except ImportError:
-    IS_RASPBERRY_PI = False
-    print("Not a Raspberry Pi")
+
 class Camera:
-    def __init__(self, raspberry_pi = False):
-        self.raspberry_pi = raspberry_pi
-        
+    def __init__(self):
+        self.raspberry_pi = platform.system() == 'Linux' and os.uname().machine == "arm"
         if self.raspberry_pi:
             self.camera = Picamera2()
             self.camera.preview_configuration.main.size = (640, 480)
