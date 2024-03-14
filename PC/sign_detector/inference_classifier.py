@@ -1,13 +1,14 @@
 import pickle
 import numpy as np
-
+from lib.cameraWrapper import Camera
+import time
 import cv2
 import mediapipe as mp
 
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
 
-cap = cv2.VideoCapture( 0 )
+cap = Camera()
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -17,31 +18,42 @@ hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
 char_dict = {}
 
+take_pic=False
+last_command=0
 for char in chars:
 	char_dict[ char.lower() ] = char
 
 for command in [ "enter", "backspace", "space", "delete" ]:
 	char_dict[ command ] = command
 
-last_character = ""
-frame_counter = 0
 recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
 send_frame = 20 # How many frames sign needs to be same before sending.
 send_buffer = []
 send_buffer_len = 16
+controllhand="Left"
 
 while True:
-	data_aux = []
-	x_ = []
-	y_ = []
-	ret, frame = cap.read()
+
+	frame = cap.capture_frame()
+	frame=cv2.flip(frame,1)
 	H, W, _ = frame.shape
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
-
+	handlist=[]
+  
 	if results.multi_hand_landmarks:
-		if len( results.multi_hand_landmarks ) == 1:
-			for hand_landmarks in results.multi_hand_landmarks:
+		for i in range (0,len(results.multi_hand_landmarks)):
+			marks=[]	
+			marks.append(results.multi_hand_landmarks[i])
+			hside=results.multi_handedness[i].classification[0].label
+			handlist.append((hside,marks))
+				
+		for side,hand in handlist:
+			data_aux = []
+			x_ = []
+			y_ = []
+		
+			for hand_landmarks in hand:
 				mp_drawing.draw_landmarks(
 					frame,  # image to draw
 					hand_landmarks,  # model output
@@ -50,7 +62,7 @@ while True:
 					mp_drawing_styles.get_default_hand_connections_style()
 				)
 
-			for hand_landmarks in results.multi_hand_landmarks:
+			for hand_landmarks in hand:
 				for i in range( len( hand_landmarks.landmark ) ):
 					x = hand_landmarks.landmark[i].x
 					y = hand_landmarks.landmark[i].y
@@ -74,30 +86,58 @@ while True:
 			predicted_character = char_dict[ prediction[0] ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
-			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
-				frame_counter += 1
-				if send_frame <= frame_counter:
-					send_buffer.append( predicted_character )
-					frame_counter = 0
+			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 220, 220, 220 ), 4 )
 
-					if send_buffer_len < len( send_buffer ):
-						send_buffer.pop(0)
+			if  side == controllhand:
+				now=0
+				if recognition_threshold <= recognition_accuracy:
+					if predicted_character == "enter":
+						if take_pic == False:
+							now=time.time()
+							if last_command	== 0:
+								take_pic = True
+								last_command=now
+							elif now-last_command > 2:
+								take_pic = True
+								last_command=now
+					if predicted_character == "backspace":
+						print(f"Yes {len(send_buffer)}, {send_buffer}")
+						if len(send_buffer)>0:
+							now=time.time()
+							if last_command	== 0:
+								send_buffer.pop()
+								print(f"1:{send_buffer}")
+								last_command=now
+							elif now-last_command > 2:
+								send_buffer.pop()
+								print(f"2:{send_buffer}")
+								last_command=now
+
+				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
+		
 			else:
-				frame_counter = 0
+				
+				if recognition_threshold <= recognition_accuracy:	
+					if take_pic == True:		
+						send_buffer.append( predicted_character[0][0] )
+						take_pic = False
 
-			last_character = predicted_character
-			color = ( 0, 255, 0 )
+						if send_buffer_len < len( send_buffer ):
+							send_buffer.pop(0)
 
-			if recognition_accuracy < recognition_threshold:
-				color = ( 0, 0, 255 )
+				if recognition_accuracy > recognition_threshold:
+					color = ( 242, 202, 134 ) #B,G,R
+				else:
+					color = ( 0, 0, 255 )
 
-			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 0, 0, 0 ), 4 )
-			cv2.putText( frame, predicted_character, ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 1.3, ( 0, 255, 0 ), 3, cv2.LINE_AA )
-			cv2.putText( frame, f"Accuracy: {recognition_accuracy:.2f}% Frame: {frame_counter}/{send_frame}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
-	else:
-		frame_counter = 0
-
-	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
+				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
+				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.75, ( 144,203,98 ), 2, cv2.LINE_AA )
+				cv2.putText( frame, f"Accuracy: {recognition_accuracy}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
+	
+	if len(send_buffer)>0:
+		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (242, 202, 134), 2, cv2.LINE_AA )
+	
 	cv2.imshow( 'frame', frame )
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
