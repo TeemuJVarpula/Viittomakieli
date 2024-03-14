@@ -15,6 +15,13 @@ mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
+char_dict = {}
+
+for char in chars:
+	char_dict[ char.lower() ] = char
+
+for command in [ "enter", "backspace", "space", "delete" ]:
+	char_dict[ command ] = command
 
 last_character = ""
 frame_counter = 0
@@ -64,7 +71,7 @@ while True:
 			y2 = int( max( y_ ) * H ) - 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
-			predicted_character = chars[ int( prediction[0] ) ]
+			predicted_character = char_dict[ prediction[0] ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:

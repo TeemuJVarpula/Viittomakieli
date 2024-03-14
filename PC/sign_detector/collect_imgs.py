@@ -2,56 +2,71 @@ import os
 
 import cv2
 
-DATA_DIR = './data'
+DATA_DIR = "data"
+LINE_HEIGHT = 32
+
+command_keys = {
+	13 : "enter",
+	8 : "backspace",
+	32 : "space",
+	255 : "delete"
+}
 
 if not os.path.exists( DATA_DIR ):
 	os.makedirs( DATA_DIR )
 
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
-number_of_classes = len( chars )
-dataset_size = 100
+dataset_size = 25
 
 cap = cv2.VideoCapture(0)
 
-for j in range( number_of_classes ):
-	if not os.path.exists( os.path.join( DATA_DIR, str( j ) ) ):
-		os.makedirs( os.path.join( DATA_DIR, str( j ) ) )
+def showText( frame, text, pos ):
+	cv2.putText( frame, text, pos, cv2.FONT_HERSHEY_SIMPLEX, 1.2, ( 0, 255, 0 ), 1, cv2.LINE_AA )
 
-	print( 'Collecting data for class {} {}'.format( j, chars[j] ) )
+def collectImages( key ):
+	sign = None
 
-	done = False
-	collect = True
-	terminate = False
+	if key in command_keys:
+		sign = command_keys[ key ]
+	else:
+		sign = chr( key )
 
-	while True:
+	singPath = os.path.join( DATA_DIR, sign )
+
+	if not os.path.exists( singPath ):
+		os.makedirs( singPath )
+
+	counter = 0
+
+	while counter < dataset_size:
 		ret, frame = cap.read()
-		cv2.putText(frame, "Press 'Q' for: " + str( j ) + " " + chars[j] + ", 'S' to skip" + ", 'E' to exit", ( 20, 50 ), cv2.FONT_HERSHEY_SIMPLEX, 0.8, ( 0, 255, 0 ), 3, cv2.LINE_AA )
-		cv2.imshow( 'frame', frame )
-
 		key = cv2.waitKey( 60 )
 
-		if key == ord( 'q' ):
-			collect = True
+		if key == 27: # ESC.
 			break
-		elif key == ord( 's' ):
-			collect = False
-			break
-		elif key == ord( 'e' ):
-			collect = False
-			terminate = True
-			break
-
-	if collect:
-		counter = 0
-		while counter < dataset_size:
-			ret, frame = cap.read()
-			cv2.imshow( 'frame', frame )
-			cv2.waitKey( 25 )
-			cv2.imwrite( os.path.join( DATA_DIR, str( j ), '{}.jpg'.format( counter ) ), frame )
+		elif key == 32: # Space.
+			cv2.imwrite( os.path.join( singPath, "{}.jpg".format( counter ) ), frame )
 			counter += 1
 
-	if terminate:
+		showText( frame, "{}: {}/{}".format( sign, counter, dataset_size ), ( 20, LINE_HEIGHT ) )
+		showText( frame, "Press Space to take a picture", ( 20, LINE_HEIGHT * 2 ) )
+		showText( frame, "Press Esc to terminate", ( 20, LINE_HEIGHT * 3 ) )
+		cv2.imshow( "frame", frame )
+
+while True:
+	ret, frame = cap.read()
+	showText( frame, "Press char for letters.", ( 20, LINE_HEIGHT ) )
+	showText( frame, "Enter, Backspace, Space or", ( 20, LINE_HEIGHT * 2 ) )
+	showText( frame, "Delete for commands.", ( 20, LINE_HEIGHT * 3 ) )
+	showText( frame, "Esc to quit.", ( 20, LINE_HEIGHT * 4 ) )
+	cv2.imshow( "frame", frame )
+
+	key = cv2.waitKey( 60 )
+
+	if key == 27: # ESC.
 		break
+	elif ( ord( chars[0].lower() ) <= key and key <= ord( chars[ len( chars ) - 1 ].lower() ) ) or ( key in command_keys ):
+		collectImages( key )
 
 cap.release()
 cv2.destroyAllWindows()
