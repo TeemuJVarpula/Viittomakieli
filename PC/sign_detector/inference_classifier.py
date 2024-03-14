@@ -98,9 +98,10 @@ while True:
 				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
 		
 			else:
-				if take_pic == True:
-					if recognition_threshold <= recognition_accuracy:
-						send_buffer.append( predicted_character[0][0] )
+				
+				if recognition_threshold <= recognition_accuracy:	
+					if take_pic == True:		
+         				send_buffer.append( predicted_character[0][0] )
 						take_pic = False
 
 						if send_buffer_len < len( send_buffer ):
