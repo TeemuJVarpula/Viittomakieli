@@ -6,10 +6,7 @@ import cv2
 
 class Camera:
     def __init__(self):
-        try:
-            self.raspberry_pi = platform.system() == 'Linux' and os.uname().machine == "arm"
-        except AttributeError:
-            self.raspberry_pi = False
+        self.raspberry_pi = platform.system() == 'Linux' and os.uname().machine == "arm"
         
         if self.raspberry_pi:
             from picamera2 import Picamera2
