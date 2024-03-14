@@ -54,7 +54,7 @@ for char in os.listdir( DATA_DIR ):
 	 			
 				img_rgb=cv2.flip(img,1)
 				
-	print( "{}/{}".format( progress, num_of_files ) )
+	print( "{}/{}".format( progress, num_of_files ),end=", ")
 	progress += 1
 
 f = open( "data.pickle", "wb" )

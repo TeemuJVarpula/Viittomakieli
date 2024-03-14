@@ -32,16 +32,15 @@ while True:
 	H, W, _ = frame.shape
 	frame_rgb = cv2.cvtColor( frame, cv2.COLOR_BGR2RGB )
 	results = hands.process( frame_rgb )
-
+	handlist=[]
+  
 	if results.multi_hand_landmarks:
-		handlist=[]
-		
 		for i in range (0,len(results.multi_hand_landmarks)):
 			marks=[]	
 			marks.append(results.multi_hand_landmarks[i])
 			hside=results.multi_handedness[i].classification[0].label
 			handlist.append((hside,marks))
-
+				
 		for side,hand in handlist:
 			data_aux = []
 			x_ = []
@@ -101,7 +100,7 @@ while True:
 				
 				if recognition_threshold <= recognition_accuracy:	
 					if take_pic == True:		
-         				send_buffer.append( predicted_character[0][0] )
+						send_buffer.append( predicted_character[0][0] )
 						take_pic = False
 
 						if send_buffer_len < len( send_buffer ):
@@ -117,7 +116,7 @@ while True:
 				cv2.putText( frame, f"Accuracy: {recognition_accuracy}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA )
 	
 	if len(send_buffer)>0:
-		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2, cv2.LINE_AA )
+		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (242, 202, 134), 2, cv2.LINE_AA )
 	
 	cv2.imshow( 'frame', frame )
 
