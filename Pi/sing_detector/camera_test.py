@@ -1,12 +1,13 @@
 import cv2
-from picamera2 import Picamera2
+#from picamera2 import Picamera2
+from cameraWrapper import PiCamera
 
-piCam = Picamera2()
-piCam.preview_configuration.main.size = ( 640, 480 )
-piCam.preview_configuration.main.format = "RGB888"
-piCam.preview_configuration.align()
-piCam.configure( "preview" )
-piCam.start()
+piCam = PiCamera()
+#piCam.preview_configuration.main.size = ( 640, 480 )
+#piCam.preview_configuration.main.format = "RGB888"
+#piCam.preview_configuration.align()
+#piCam.configure( "preview" )
+#piCam.start()
 
 while True:
 	frame = piCam.capture_array()

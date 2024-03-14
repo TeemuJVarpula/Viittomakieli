@@ -19,6 +19,12 @@ chars=chars.lower()
 
 take_pic=False
 last_pictime=0
+for char in chars:
+	char_dict[ char.lower() ] = char
+
+for command in [ "enter", "backspace", "space", "delete" ]:
+	char_dict[ command ] = command
+
 recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
 send_frame = 20 # How many frames sign needs to be same before sending.
 send_buffer = []

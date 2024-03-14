@@ -1,16 +1,13 @@
 import pickle
 import numpy as np
-
+from lib.cameraWrapper import Camera
 import cv2
 import mediapipe as mp
-#from picamera2 import Picamera2
-
-from cameraWrapper import Camera
-
-cap = Camera()
 
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
+
+cap = Camera()
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -18,11 +15,18 @@ mp_drawing_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands( static_image_mode = True, min_detection_confidence = 0.3 )
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"
+char_dict = {}
+
+for char in chars:
+	char_dict[ char.lower() ] = char
+
+for command in [ "enter", "backspace", "space", "delete" ]:
+	char_dict[ command ] = command
 
 last_character = ""
 frame_counter = 0
 recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
-send_frame = 10 # How many frames sign needs to be same before sending.
+send_frame = 20 # How many frames sign needs to be same before sending.
 send_buffer = []
 send_buffer_len = 16
 
@@ -67,7 +71,7 @@ while True:
 			y2 = int( max( y_ ) * H ) - 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
-			predicted_character = chars[ int( prediction[0] ) ]
+			predicted_character = char_dict[ prediction[0] ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			if predicted_character == last_character and recognition_threshold <= recognition_accuracy:
@@ -94,10 +98,10 @@ while True:
 		frame_counter = 0
 
 	cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA )
-	cv2.imshow( "Camera", frame )
+	cv2.imshow( 'frame', frame )
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
 		break
 
-cap.close()
+cap.release()
 cv2.destroyAllWindows()
