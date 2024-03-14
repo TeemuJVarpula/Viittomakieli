@@ -20,6 +20,9 @@ char_dict = {}
 for char in chars:
 	char_dict[ char.lower() ] = char
 
+for command in [ "enter", "backspace", "space", "delete" ]:
+	char_dict[ command ] = command
+
 last_character = ""
 frame_counter = 0
 recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
