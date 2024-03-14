@@ -28,7 +28,7 @@ class Camera:
         if self.raspberry_pi:
             return self.camera.capture_array()
         else:
-            frame = self.camera.read()
+            ret,frame = self.camera.read()
             return frame
     
 

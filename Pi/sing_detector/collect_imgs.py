@@ -27,7 +27,7 @@ for j in range( number_of_classes ):
 	terminate = False
 
 	while True:
-		ret, frame = cap.capture_frame()
+		frame = cap.capture_frame()
 		cv2.putText(frame, "Press 'Q' for: " + str( j ) + " " + chars[j] + ", 'S' to skip" + ", 'E' to exit", ( 20, 50 ), cv2.FONT_HERSHEY_SIMPLEX, 0.8, ( 0, 255, 0 ), 3, cv2.LINE_AA )
 		cv2.imshow( "piCam", frame )
 
