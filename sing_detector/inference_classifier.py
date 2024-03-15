@@ -107,7 +107,6 @@ while True:
 								take_pic = True
 								last_command=now
 					if predicted_character == "backspace":
-						print(f"Yes {len(send_buffer)}, {send_buffer}")
 						if len(send_buffer)>0:
 							now=time.time()
 							if last_command	== 0:
