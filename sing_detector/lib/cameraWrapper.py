@@ -1,4 +1,4 @@
-import platform
+
 import os
 import cv2
 #from picamera2 import Picamera2
@@ -6,7 +6,7 @@ import cv2
 
 class Camera:
     def __init__(self):
-        self.raspberry_pi = platform.system() == 'Linux' and os.uname().machine == "aarch64"
+        self.raspberry_pi = os.uname().sysname == 'Linux' and os.uname().machine == "aarch64"
         
         if self.raspberry_pi:
             from picamera2 import Picamera2
