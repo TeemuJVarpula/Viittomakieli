@@ -27,6 +27,7 @@ for char in os.listdir( DATA_DIR ):
 			
 			img = cv2.imread( os.path.join( DATA_DIR, char, img_path ) )
 			img_rgb = cv2.cvtColor( img, cv2.COLOR_BGR2RGB )
+			img_rgb = cv2.flip( img_rgb, 1 )
    
 			data_aux = []
 			x_ = []
