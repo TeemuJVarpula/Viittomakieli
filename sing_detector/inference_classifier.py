@@ -95,22 +95,22 @@ while True:
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 220, 220, 220 ), 4 )
 
 	if side == controllhand:
-			time_now = time.time()
-			take_command = last_command_time == 0 or ( time_now - last_command_time ) > 2
+		time_now = time.time()
+		take_command = last_command_time == 0 or ( time_now - last_command_time ) > 2
 
-			if take_command and recognition_threshold <= recognition_accuracy:
-					if predicted_character == "enter":
-							take_pic = True
-					elif predicted_character in ["backspace", "space", "delete"]:
-							if len(send_buffer) > 0:
-									if predicted_character == "backspace":
-											send_buffer.pop()
-									elif predicted_character == "space":
-											send_buffer.append(" ")
-									elif predicted_character == "delete":
-											send_buffer.clear()
-									print( send_buffer )
-					last_command_time = time_now
+		if take_command and recognition_threshold <= recognition_accuracy:
+			if predicted_character == "enter":
+				take_pic = True
+			elif predicted_character in ["backspace", "space", "delete"]:
+				if len(send_buffer) > 0:
+						if predicted_character == "backspace":
+							send_buffer.pop()
+						elif predicted_character == "space":
+							send_buffer.append(" ")
+						elif predicted_character == "delete":
+							send_buffer.clear()
+							print( send_buffer )
+						last_command_time = time_now
 
 			cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
 			cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
