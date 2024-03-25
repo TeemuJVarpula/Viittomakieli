@@ -96,32 +96,37 @@ while True:
 
 			if  side == controllhand:
 				now=0
-				if recognition_threshold <= recognition_accuracy:
-					if predicted_character == "enter":
-						if take_pic == False:
-							now=time.time()
-							if last_command	== 0:
-								take_pic = True
-								last_command=now
-							elif now-last_command > 2:
-								take_pic = True
-								last_command=now
-					if predicted_character == "backspace":
-						if len(send_buffer)>0:
-							now=time.time()
-							if last_command	== 0:
-								send_buffer.pop()
-								print(f"1:{send_buffer}")
-								last_command=now
-							elif now-last_command > 2:
-								send_buffer.pop()
-								print(f"2:{send_buffer}")
-								last_command=now
 
-				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
-				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
+			if recognition_threshold <= recognition_accuracy:
+					if predicted_character == "enter":
+							if take_pic == False:
+									now = time.time()
+
+									if last_command == 0 or now - last_command > 2:
+												take_pic = True
+												last_command = now
+
+					if predicted_character in ["backspace", "space", "delete"]:
+								if take_pic == False:
+									now = time.time()
+									condition = last_command == 0 or now - last_command > 2
+
+									if len(send_buffer) > 0 and condition:
+											now = time.time()
+
+											if predicted_character == "backspace":
+													send_buffer.pop()
+													print(f"1:{send_buffer}")
+											elif predicted_character == "space":
+													send_buffer.append(" ")
+											elif predicted_character == "delete":
+													send_buffer.clear()
+											last_command = now
+
+			cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
+			cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
 		
-			else:
+		else:
 				
 				if recognition_threshold <= recognition_accuracy:	
 					if take_pic == True:		
