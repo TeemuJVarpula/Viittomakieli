@@ -8,4 +8,3 @@ def send(text):
     lcd.clear()
     lcd.cursor_pos = (0, 0)
     lcd.write_string(text)
-    

@@ -1,4 +1,3 @@
-
 import os
 import sys
 import cv2
@@ -12,7 +11,7 @@ class Camera:
 				self.raspberry_pi = False
 		else:
 			self.raspberry_pi = False
-		
+
 		if self.raspberry_pi:
 			from picamera2 import Picamera2
 			self.camera = Picamera2()
@@ -30,11 +29,9 @@ class Camera:
 		else:
 			ret,frame = self.camera.read()
 			return frame
-	
 
 	def close(self):
 		if self.raspberry_pi:
 			self.camera.close() 
 		else: 
 			self.camera.release()
-		
