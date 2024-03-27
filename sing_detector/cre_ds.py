@@ -32,15 +32,14 @@ for char in os.listdir(DATA_DIR):
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img_rgb = cv2.flip(img_rgb, 1)
 
-            data_aux = []
+            # Käsittele kuva käsien havainnointitulosten normalisointiin
             results = hands.process(img_rgb)
-
             if results.multi_hand_landmarks:  # Detected one hand.
-                # Normalisoi data käyttäen DataNormalizeria
-                data_aux = normalizer.normalize_data(results.multi_hand_landmarks)
-                data.append(data_aux)
+                # Normalisoi data käyttäen DataNormalizeria 
+                normalized_data = normalizer.normalize_data(results.multi_hand_landmarks)
+                data.append(normalized_data)
                 labels.append(char)
-
+            
     print("{}/{}".format(progress, num_of_files))
     progress += 1
 
