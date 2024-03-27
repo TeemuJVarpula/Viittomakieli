@@ -38,7 +38,6 @@ for char in os.listdir(DATA_DIR):
             if results.multi_hand_landmarks:  # Detected one hand.
                 # Normalisoi data käyttäen DataNormalizeria
                 data_aux = normalizer.normalize_data(results.multi_hand_landmarks)
-                print(data_aux[:10])
                 data.append(data_aux)
                 labels.append(char)
 
