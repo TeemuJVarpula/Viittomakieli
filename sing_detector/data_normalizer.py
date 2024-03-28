@@ -35,33 +35,31 @@ class DataNormalizer:
         return cropped_image
 
     def normalize_data(self, hand_landmarks):
-        if hand_landmarks:
-            for hand_landmark in hand_landmarks:
-                # Etsi kämmen (landmark[0]) ja keskisormen päässä oleva landmark (landmark[12])
-                palm_landmark = hand_landmark.landmark[0]
-                middle_finger_tip_landmark = hand_landmark.landmark[12]
+            # Etsi kämmen (landmark[0]) ja keskisormen päässä oleva landmark (landmark[12])
+            palm_landmark = hand_landmarks.landmark[0]
+            middle_finger_tip_landmark = hand_landmarks.landmark[12]
 
-                # Laske kämmenestä keskisormen päähän oleva etäisyys
-                palm_middle_finger_distance_x = middle_finger_tip_landmark.x - palm_landmark.x
-                palm_middle_finger_distance_y = middle_finger_tip_landmark.y - palm_landmark.y
+            # Laske kämmenestä keskisormen päähän oleva etäisyys
+            palm_middle_finger_distance_x = middle_finger_tip_landmark.x - palm_landmark.x
+            palm_middle_finger_distance_y = middle_finger_tip_landmark.y - palm_landmark.y
 
-                # Käy läpi kaikki käsien landmarkit
-                for landmark in hand_landmark.landmark[1:]:
-                    # Laske etäisyys x- ja y-akseleilla kämmenestä kyseiseen pisteeseen
-                    distance_x = landmark.x - palm_landmark.x
-                    distance_y = landmark.y - palm_landmark.y
+            # Käy läpi kaikki käsien landmarkit
+            for landmark in hand_landmarks.landmark[1:]:
+                # Laske etäisyys x- ja y-akseleilla kämmenestä kyseiseen pisteeseen
+                distance_x = landmark.x - palm_landmark.x
+                distance_y = landmark.y - palm_landmark.y
                     
-                    # Normalisoi etäisyydet käyttäen kämmenestä keskisormen päähän olevaa etäisyyttä
-                    relative_distance_x = abs(distance_x / palm_middle_finger_distance_x)
-                    relative_distance_y = abs(distance_y / palm_middle_finger_distance_y)
+                # Normalisoi etäisyydet käyttäen kämmenestä keskisormen päähän olevaa etäisyyttä
+                relative_distance_x = abs(distance_x / palm_middle_finger_distance_x)
+                relative_distance_y = abs(distance_y / palm_middle_finger_distance_y)
 
-                    # Lisää suhteelliset etäisyydet dataan
-                    self.data_aux.append(relative_distance_x)
-                    self.data_aux.append(relative_distance_y)
+                # Lisää suhteelliset etäisyydet dataan
+                self.data_aux.append(relative_distance_x)
+                self.data_aux.append(relative_distance_y)
 
             # Tulosta suhteelliset etäisyydet
             #print("All relative distances X:", self.data_aux[::2])  # Tulosta x-akselin etäisyydet
-            print("First 10 relative distances Y:", self.data_aux[1:21:2])
+            #print("First 10 relative distances Y:", self.data_aux[1:21:2])
 
             # Palauta suhteelliset etäisyydet
             return self.data_aux

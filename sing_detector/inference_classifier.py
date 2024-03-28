@@ -4,14 +4,14 @@ from lib.cameraWrapper import Camera
 import time
 import cv2
 import mediapipe as mp
-
+from data_normalizer import DataNormalizer
 display = None
 
 model_dict = pickle.load( open( './model.p', 'rb' ) )
 model = model_dict['model']
 
 cap = Camera()
-
+normalizer = DataNormalizer()
 # Only import display on raspberry.
 if cap.raspberry_pi:
 	import lib.text_display as display
@@ -68,27 +68,8 @@ while True:
 					mp_drawing_styles.get_default_hand_connections_style()
 				)
 
-			for hand_landmarks in hand:
-				for i in range( len( hand_landmarks.landmark ) ):
-					x = hand_landmarks.landmark[i].x
-					y = hand_landmarks.landmark[i].y
-
-					x_.append( x )
-					y_.append( y )
-
-				for i in range( len( hand_landmarks.landmark ) ):
-					x = hand_landmarks.landmark[i].x
-					y = hand_landmarks.landmark[i].y
-					data_aux.append( x - min( x_ ) )
-					data_aux.append( y - min( y_ ) )
-
-			x1 = int( min( x_ ) * W ) - 10
-			y1 = int( min( y_ ) * H ) - 10
-
-			x2 = int( max( x_ ) * W ) - 10
-			y2 = int( max( y_ ) * H ) - 10
-
-			prediction = model.predict( [ np.asarray( data_aux ) ] )
+			normalized_data = normalizer.normalize_data(results.multi_hand_landmarks)
+			prediction = model.predict( [ np.asarray( normalized_data ) ] )
 			predicted_character = char_dict[ prediction[0] ]
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 

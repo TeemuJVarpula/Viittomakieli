@@ -36,7 +36,7 @@ for char in os.listdir(DATA_DIR):
             results = hands.process(img_rgb)
             if results.multi_hand_landmarks:  # Detected one hand.
                 # Normalisoi data käyttäen DataNormalizeria 
-                normalized_data = normalizer.normalize_data(results.multi_hand_landmarks)
+                normalized_data = normalizer.normalize_data(results.multi_hand_landmarks[0])
                 data.append(normalized_data)
                 labels.append(char)
             
