@@ -54,6 +54,12 @@ while True:
 			hside = results.multi_handedness[i].classification[0].label
 			handlist.append( ( hside, marks ) )
 
+			# print( marks[0].landmark[0] )
+			print( marks[0].landmark[12] )
+			# print( marks[0].world_landmarks[12] )
+			# print( results.multi_handedness[i] )
+			# print( results.multi_hand_world_landmarks[i] )
+
 		for side, hand in handlist:
 			data_aux = []
 			x_ = []
