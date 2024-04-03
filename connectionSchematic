@@ -18,7 +18,7 @@ center  ->  gnd
 left    ->  vcc
 
 LCD Display I2C
-vcc     -> vcc
+vcc     ->  vcc
 gnd     ->  gnd
 sda     ->  3
 scl     ->  5

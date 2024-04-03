@@ -54,12 +54,6 @@ while True:
 			hside = results.multi_handedness[i].classification[0].label
 			handlist.append( ( hside, marks ) )
 
-			# print( marks[0].landmark[0] )
-			print( marks[0].landmark[12] )
-			# print( marks[0].world_landmarks[12] )
-			# print( results.multi_handedness[i] )
-			# print( results.multi_hand_world_landmarks[i] )
-
 		for side, hand in handlist:
 			data_aux = []
 			x_ = []
@@ -76,23 +70,25 @@ while True:
 
 			for hand_landmarks in hand:
 				for i in range( len( hand_landmarks.landmark ) ):
-					x = hand_landmarks.landmark[i].x
-					y = hand_landmarks.landmark[i].y
-
-					x_.append( x )
-					y_.append( y )
+					x_.append( hand_landmarks.landmark[i].x )
+					y_.append( hand_landmarks.landmark[i].y )
 
 				for i in range( len( hand_landmarks.landmark ) ):
-					x = hand_landmarks.landmark[i].x
-					y = hand_landmarks.landmark[i].y
-					data_aux.append( x - min( x_ ) )
-					data_aux.append( y - min( y_ ) )
+					# Move landmarks to upper corner.
+					x = hand_landmarks.landmark[i].x - min( x_ )
+					y = hand_landmarks.landmark[i].y - min( y_ )
+
+					# Normalize size by scaling landmarks to window height.
+					scale = 1 / ( max( y_ ) - min( y_ ) )
+					data_aux.append( x * scale )
+					data_aux.append( y * scale )
+					# print( i, "scale", scale, x * scale, y * scale )
 
 			x1 = int( min( x_ ) * W ) - 10
 			y1 = int( min( y_ ) * H ) - 10
 
-			x2 = int( max( x_ ) * W ) - 10
-			y2 = int( max( y_ ) * H ) - 10
+			x2 = int( max( x_ ) * W ) + 10
+			y2 = int( max( y_ ) * H ) + 10
 
 			prediction = model.predict( [ np.asarray( data_aux ) ] )
 			predicted_character = char_dict[ prediction[0] ]
@@ -112,7 +108,7 @@ while True:
 							if predicted_character == "backspace":
 								send_buffer.pop()
 							elif predicted_character == "space":
-								send_buffer.append(" ")
+								send_buffer.append("_")
 							elif predicted_character == "delete":
 								send_buffer.clear()
 								print( send_buffer )
