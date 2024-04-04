@@ -37,6 +37,7 @@ recognition_threshold = 30.0 # Lowest acceptable recognition accuracy.
 send_frame = 20 # How many frames sign needs to be same before sending.
 send_buffer = []
 send_buffer_len = 16
+accuracy_buff=["L", ":", "0", "0", "%", "_", "_", "_", "_", "_", "_", "R", ":", "0", "0", "%"]
 controllhand = "Left"
 
 while True:
@@ -95,11 +96,14 @@ while True:
 			recognition_accuracy = max( ( model.predict_proba( [ np.asarray( data_aux ) ] ) )[0] ) * 100
 
 			cv2.rectangle( frame, ( x1, y1 ), ( x2, y2 ), ( 220, 220, 220 ), 4 )
+			#print(f"rec:{recognition_accuracy}")
 
 			if side == controllhand:
 				time_now = time.time()
 				take_command = last_command_time == 0 or ( time_now - last_command_time ) > 2
-
+				accuracy_buff[1]=str(recognition_accuracy)[0]
+				accuracy_buff[2]=str(recognition_accuracy)[1]
+    
 				if take_command and recognition_threshold <= recognition_accuracy:
 					if predicted_character == "enter":
 						take_pic = True
@@ -117,6 +121,9 @@ while True:
 				cv2.rectangle( frame, ( x1, y1 - 40 ), ( x2, y1 ), ( 220, 220, 220 ),cv2.FILLED)
 				cv2.putText( frame, f"{side} {predicted_character} {recognition_accuracy:.0f}%", ( x1, y1 - 10 ), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ( 218,124,110 ), 2, cv2.FILLED )
 			else:
+				accuracy_buff[13]=str(recognition_accuracy)[0]
+				accuracy_buff[14]=str(recognition_accuracy)[1]
+				
 				if recognition_threshold <= recognition_accuracy:	
 					if take_pic == True:		
 						send_buffer.append( predicted_character[0][0] )
@@ -138,11 +145,15 @@ while True:
 		cv2.putText( frame, "".join( send_buffer ), (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (242, 202, 134), 2, cv2.LINE_AA )
 
 	cv2.imshow( 'frame', frame )
-
+	#print(accuracy_buff)
+ 
 	if display != None:
-		display.send( send_buffer )
+		display.send( send_buffer,accuracy_buff )
+		
 
 	if cv2.waitKey( 60 ) == 27: # ESC.
+		break
+	if cv2.getWindowProperty('frame',cv2.WND_PROP_VISIBLE) < 1:        
 		break
 
 cap.close()

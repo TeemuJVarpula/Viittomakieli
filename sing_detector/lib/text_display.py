@@ -13,13 +13,17 @@ lcd_i2c = CharLCD_ic2(i2c_expander='PCF8574', address=0x27, port=1, cols=16, row
 lcd_i2c.clear()
 
 
-def send(text):
+def send(text,accuracies):
     lcd.clear()
     lcd.cursor_pos = (0, 0)
     lcd.write_string(text)
+    
+    lcd.cursor_pos = (1, 0)
+    lcd.write_string(accuracies)
     
     lcd_i2c.clear()
     lcd_i2c.cursor_pos = (0, 0)
     lcd_i2c.write_string(text)
     
-    
+    lcd_i2c.cursor_pos = (1, 0)
+    lcd_i2c.write_string(accuracies)

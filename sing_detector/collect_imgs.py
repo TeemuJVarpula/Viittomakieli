@@ -69,6 +69,8 @@ while True:
 		break
 	elif ( ord( chars[0].lower() ) <= key and key <= ord( chars[ len( chars ) - 1 ].lower() ) ) or ( key in command_keys ):
 		collectImages( key )
+	if cv2.getWindowProperty('frame',cv2.WND_PROP_VISIBLE) < 1:        
+		break
 
 cap.close()
 cv2.destroyAllWindows()
