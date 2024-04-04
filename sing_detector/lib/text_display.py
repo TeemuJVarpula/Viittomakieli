@@ -30,3 +30,4 @@ def send(text,accuracies):
     
 def clear():
     lcd.clear()
+    lcd_i2c.clear()
