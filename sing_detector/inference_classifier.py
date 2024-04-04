@@ -156,5 +156,8 @@ while True:
 	if cv2.getWindowProperty('frame',cv2.WND_PROP_VISIBLE) < 1:        
 		break
 
+if display != None:
+	display.clear()
+
 cap.close()
 cv2.destroyAllWindows()

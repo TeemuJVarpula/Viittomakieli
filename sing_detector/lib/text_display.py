@@ -27,3 +27,6 @@ def send(text,accuracies):
     
     lcd_i2c.cursor_pos = (1, 0)
     lcd_i2c.write_string(accuracies)
+    
+def clear():
+    lcd.clear()
