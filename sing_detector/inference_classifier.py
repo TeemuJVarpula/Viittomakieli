@@ -101,8 +101,8 @@ while True:
 			if side == controllhand:
 				time_now = time.time()
 				take_command = last_command_time == 0 or ( time_now - last_command_time ) > 2
-				accuracy_buff[1]=str(recognition_accuracy)[0]
-				accuracy_buff[2]=str(recognition_accuracy)[1]
+				accuracy_buff[2]=str(recognition_accuracy)[0]
+				accuracy_buff[3]=str(recognition_accuracy)[1]
     
 				if take_command and recognition_threshold <= recognition_accuracy:
 					if predicted_character == "enter":
