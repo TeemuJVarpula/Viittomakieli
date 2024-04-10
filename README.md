@@ -1,6 +1,6 @@
 # Sign Language
 
-Sign Language_project
+Sign Language_project. 
     Project was part of course and was made within project time line. Project is now ended and archived.
 
 ## Project members:
